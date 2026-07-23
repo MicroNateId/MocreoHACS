@@ -4,8 +4,6 @@
 ![License](https://img.shields.io/github/license/MicroNateId/MocreoHACS?style=for-the-badge&color=green)
 ![HACS](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)
 
-**Current Release:** `v1.3.0`
-
 > [!IMPORTANT]
 > **DISCLAIMER & LEGAL NOTICE**:
 > 1. **Unofficial Integration**: This custom component is an independent, open-source community project. It is **not** created, maintained, supported, affiliated with, or endorsed by MOCREO® or its parent/affiliated entities. All product names, logos, trademarks, and registered trademarks are the property of their respective owners.
