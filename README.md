@@ -4,7 +4,7 @@
 ![License](https://img.shields.io/github/license/MicroNateId/MocreoHACS?style=for-the-badge&color=green)
 ![HACS](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)
 
-**Current Release:** `v1.1.0`
+**Current Release:** `v1.3.0`
 
 > [!IMPORTANT]
 > **DISCLAIMER & LEGAL NOTICE**:
@@ -13,18 +13,33 @@
 > 3. **Limitation of Liability**: IN NO EVENT SHALL THE AUTHORS, CONTRIBUTORS, OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 > 4. **No Guarantee of Critical Monitoring**: This software is not intended for high-risk, life-critical, medical, or mission-critical monitoring. The author accepts **zero liability** for any property damage, inventory/food spoilage, equipment failure, business interruption, or missed alerts resulting from the use or failure of this software.
 
-This custom component integrates the **MOCREO IoT Platform** into Home Assistant, enabling local tracking of devices (such as the H6Pro gateway and LS3T sensors) via the MOCREO Cloud Public API.
+This custom component integrates the **MOCREO IoT Platform** into Home Assistant, enabling local tracking of devices via the MOCREO Cloud Public API.
+
+## Hardware & Product Line Support
+
+This integration dynamically discovers and supports all MOCREO product families:
+
+* **Hubs & Gateways**: H6Pro, H5-Pro, H5-Lite, H1B, H2 (`router-wireless` icon).
+* **Climate & Temperature Sensors**: LS3/LS3T, ST6, ST3, ST4, ST5 (`thermometer-water` icon).
+* **Water Leak Detectors**: SW1, SW2 (`water-alert` moisture binary sensor + state).
+* **Freezer / Cryo Ultra-Low Sensors**: ST9, SF1 (`snowflake-alert` icon).
+* **Soil Moisture Sensors**: SL1 (`sprout` icon).
+* **Contact / Door Sensors**: SC1 (`door` icon).
 
 ## Features
 
 - **Automated Authentication Flow**: Just type in your MOCREO account email and password; the integration will automatically retrieve your assets and generate a secure API Key for Home Assistant.
-- **Dynamic Entity Discovery**: Automatically creates sensor entities based on the capabilities of each device associated with your asset.
-- **Sensors Supported**:
-  - **Temperature** (`°C` or `°F`, converted automatically by Home Assistant settings)
+- **Dynamic Entity Discovery**: Automatically creates sensor and binary sensor entities based on the properties reported by each device.
+- **Sensors & Measurements Supported**:
+  - **Temperature** (`°C` or `°F`, scaled automatically)
   - **Humidity** (`%`)
   - **Battery Percentage** (`%`)
+  - **Water Level**
+  - **Water Leak State**
+  - **Frozen State**
 - **Binary Sensors Supported**:
-  - **Online Status** (`Connectivity` binary sensor for both gateways and nodes)
+  - **Online Status** (`Connectivity` binary sensor for all hubs and nodes)
+  - **Moisture / Water Leak Alert** (`Moisture` binary sensor for water detectors)
 - **Automatic Refresh**: Automatically polls the MOCREO API every 60 seconds.
 
 ## Installation

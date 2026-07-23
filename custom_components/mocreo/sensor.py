@@ -18,6 +18,8 @@ from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
+SUPPORTED_FIELDS = ("temperature", "humidity", "battery_percentage", "water_level", "water_leak", "frozen")
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
@@ -31,12 +33,9 @@ async def async_setup_entry(
     for device_id, device in coordinator.data.items():
         properties = device.get("properties", {})
         
-        if "temperature" in properties:
-            entities.append(MocreoSensor(coordinator, device_id, "temperature"))
-        if "humidity" in properties:
-            entities.append(MocreoSensor(coordinator, device_id, "humidity"))
-        if "battery_percentage" in properties:
-            entities.append(MocreoSensor(coordinator, device_id, "battery_percentage"))
+        for field in SUPPORTED_FIELDS:
+            if field in properties:
+                entities.append(MocreoSensor(coordinator, device_id, field))
 
     async_add_entities(entities)
 
@@ -49,7 +48,7 @@ class MocreoSensor(CoordinatorEntity, SensorEntity):
         self._device_id = device_id
         self._sensor_type = sensor_type
         
-        # Configure configuration depending on sensor type
+        # Configure settings depending on sensor type
         if sensor_type == "temperature":
             self._attr_name = "Temperature"
             self._attr_device_class = SensorDeviceClass.TEMPERATURE
@@ -68,6 +67,16 @@ class MocreoSensor(CoordinatorEntity, SensorEntity):
             self._attr_state_class = SensorStateClass.MEASUREMENT
             self._attr_native_unit_of_measurement = PERCENTAGE
             self._attr_icon = "mdi:battery"
+        elif sensor_type == "water_level":
+            self._attr_name = "Water Level"
+            self._attr_state_class = SensorStateClass.MEASUREMENT
+            self._attr_icon = "mdi:water-depth"
+        elif sensor_type == "water_leak":
+            self._attr_name = "Water Leak State"
+            self._attr_icon = "mdi:water-alert"
+        elif sensor_type == "frozen":
+            self._attr_name = "Frozen State"
+            self._attr_icon = "mdi:snowflake"
             
         self._attr_unique_id = f"mocreo_{device_id}_{sensor_type}"
         self._attr_has_entity_name = True
