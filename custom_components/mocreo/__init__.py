@@ -1,7 +1,7 @@
 """The MOCREO IoT Platform integration."""
 from datetime import timedelta
 import logging
-import async_timeout
+import asyncio
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_API_KEY, Platform
@@ -33,7 +33,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         headers = {"X-API-Key": api_key}
         
         try:
-            async with async_timeout.timeout(10):
+            async with asyncio.timeout(10):
                 async with session.get(url, headers=headers) as response:
                     if response.status != 200:
                         raise UpdateFailed(f"Error communicating with API: status {response.status}")
