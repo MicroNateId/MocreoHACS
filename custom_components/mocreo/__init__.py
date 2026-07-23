@@ -62,6 +62,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
 
+    # Register static path for custom Lovelace card
+    try:
+        hass.http.register_static_path(
+            "/mocreo_static/mocreo-card.js",
+            hass.config.path("custom_components/mocreo/mocreo-card.js"),
+            cache_headers=False,
+        )
+    except Exception:
+        pass
+
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
     return True
