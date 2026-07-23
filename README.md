@@ -17,12 +17,14 @@ This custom component integrates the **MOCREO IoT Platform** into Home Assistant
 
 This integration dynamically discovers and supports all MOCREO product families:
 
-* **Hubs & Gateways**: H6Pro, H5-Pro, H5-Lite, H1B, H2 (`router-wireless` icon).
-* **Climate & Temperature Sensors**: LS3/LS3T, ST6, ST3, ST4, ST5 (`thermometer-water` icon).
-* **Water Leak Detectors**: SW1, SW2 (`water-alert` moisture binary sensor + state).
-* **Freezer / Cryo Ultra-Low Sensors**: ST9, SF1 (`snowflake-alert` icon).
-* **Soil Moisture Sensors**: SL1 (`sprout` icon).
-* **Contact / Door Sensors**: SC1 (`door` icon).
+| Hardware Type | Product Name / Models | Default Icon | Supported Features |
+| :--- | :--- | :--- | :--- |
+| **Hub / Gateway** | H6Pro, H5-Pro, H5-Lite, H1B, H2 | `mdi:router-wireless` | Online Connectivity Status |
+| **Climate Sensor** | LS3, LS3T, ST6, ST3, ST4, ST5 | `mdi:thermometer-water` | Temperature, Humidity, Battery Percentage, Online Status |
+| **Water Leak Detector** | SW1, SW2 | `mdi:water-alert` | Moisture Binary Alert, Water Leak State, Battery Percentage, Online Status |
+| **Freezer / Cryo Sensor** | ST9, SF1 | `mdi:snowflake-alert` | Ultra-low Temperature (down to -200°C), Frozen State, Battery Percentage, Online Status |
+| **Soil Moisture Sensor** | SL1 | `mdi:sprout` | Soil Moisture Level, Battery Percentage, Online Status |
+| **Contact / Door Sensor** | SC1 | `mdi:door` | Door/Window Open/Close State, Battery Percentage, Online Status |
 
 ## Features
 
