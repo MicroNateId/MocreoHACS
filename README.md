@@ -1,5 +1,18 @@
 # MOCREO IoT Platform Custom Integration for Home Assistant
 
+![Version](https://img.shields.io/github/v/release/MicroNateId/MocreoHACS?style=for-the-badge&color=blue)
+![License](https://img.shields.io/github/license/MicroNateId/MocreoHACS?style=for-the-badge&color=green)
+![HACS](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)
+
+**Current Release:** `v1.1.0`
+
+> [!IMPORTANT]
+> **DISCLAIMER & LEGAL NOTICE**:
+> 1. **Unofficial Integration**: This custom component is an independent, open-source community project. It is **not** created, maintained, supported, affiliated with, or endorsed by MOCREO® or its parent/affiliated entities. All product names, logos, trademarks, and registered trademarks are the property of their respective owners.
+> 2. **Provided "AS IS"**: This software is provided "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, ACCURACY, AND NON-INFRINGEMENT.
+> 3. **Limitation of Liability**: IN NO EVENT SHALL THE AUTHORS, CONTRIBUTORS, OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+> 4. **No Guarantee of Critical Monitoring**: This software is not intended for high-risk, life-critical, medical, or mission-critical monitoring. The author accepts **zero liability** for any property damage, inventory/food spoilage, equipment failure, business interruption, or missed alerts resulting from the use or failure of this software.
+
 This custom component integrates the **MOCREO IoT Platform** into Home Assistant, enabling local tracking of devices (such as the H6Pro gateway and LS3T sensors) via the MOCREO Cloud Public API.
 
 ## Features
@@ -58,3 +71,7 @@ You can install this integration via the Home Assistant Community Store (HACS):
    * If you have only one Asset, the integration will auto-select it, generate an API Key, and finish setup.
    * If you have multiple Assets, you will be prompted with a dropdown to select which asset/location you want to sync.
 6. The integration will automatically load all your devices!
+
+## License
+
+This project is licensed under the [GNU General Public License v3.0](LICENSE).
