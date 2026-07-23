@@ -38,10 +38,19 @@ class MocreoOnlineBinarySensor(CoordinatorEntity, BinarySensorEntity):
         super().__init__(coordinator)
         self._device_id = device_id
         
+        device = self.coordinator.data.get(self._device_id, {})
+        device_type = device.get("type", "NODE")
+        
         self._attr_name = "Online"
         self._attr_device_class = BinarySensorDeviceClass.CONNECTIVITY
         self._attr_unique_id = f"mocreo_{device_id}_online"
         self._attr_has_entity_name = True
+        
+        # Differentiate icon based on device type (HUB vs NODE)
+        if device_type == "HUB":
+            self._attr_icon = "mdi:router-wireless"
+        else:
+            self._attr_icon = "mdi:signal-distance-variant"
 
     @property
     def is_on(self) -> bool:

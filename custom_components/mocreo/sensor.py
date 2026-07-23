@@ -55,16 +55,19 @@ class MocreoSensor(CoordinatorEntity, SensorEntity):
             self._attr_device_class = SensorDeviceClass.TEMPERATURE
             self._attr_state_class = SensorStateClass.MEASUREMENT
             self._attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
+            self._attr_icon = "mdi:thermometer"
         elif sensor_type == "humidity":
             self._attr_name = "Humidity"
             self._attr_device_class = SensorDeviceClass.HUMIDITY
             self._attr_state_class = SensorStateClass.MEASUREMENT
             self._attr_native_unit_of_measurement = PERCENTAGE
+            self._attr_icon = "mdi:water-percent"
         elif sensor_type == "battery_percentage":
             self._attr_name = "Battery"
             self._attr_device_class = SensorDeviceClass.BATTERY
             self._attr_state_class = SensorStateClass.MEASUREMENT
             self._attr_native_unit_of_measurement = PERCENTAGE
+            self._attr_icon = "mdi:battery"
             
         self._attr_unique_id = f"mocreo_{device_id}_{sensor_type}"
         self._attr_has_entity_name = True
