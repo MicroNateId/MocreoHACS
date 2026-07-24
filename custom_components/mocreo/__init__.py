@@ -16,6 +16,23 @@ _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.BINARY_SENSOR]
 
+async def async_setup(hass: HomeAssistant, config: dict) -> bool:
+    """Set up the MOCREO component."""
+    try:
+        card_path = hass.config.path("custom_components/mocreo/mocreo-card.js")
+        hass.http.register_static_path(
+            "/mocreo_static/mocreo-card.js",
+            card_path,
+            cache_headers=False,
+        )
+        from homeassistant.components.frontend import add_extra_js_url
+        add_extra_js_url(hass, "/mocreo_static/mocreo-card.js")
+        add_extra_js_url(hass, "/local/mocreo-card.js")
+    except Exception as err:
+        _LOGGER.warning("Error registering extra JS url in async_setup: %s", err)
+
+    return True
+
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up MOCREO IoT Platform from a config entry."""
     api_key = entry.data["api_key"]
@@ -49,7 +66,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             None, importlib.import_module, f"custom_components.{DOMAIN}.{platform}"
         )
 
-    # Register static path for custom Lovelace card safely
+    # Register static path and inject extra JS url into frontend HTML
     try:
         card_path = await loop.run_in_executor(
             None, hass.config.path, "custom_components/mocreo/mocreo-card.js"
@@ -59,8 +76,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             card_path,
             cache_headers=False,
         )
-    except Exception:
-        pass
+        from homeassistant.components.frontend import add_extra_js_url
+        add_extra_js_url(hass, "/mocreo_static/mocreo-card.js")
+        add_extra_js_url(hass, "/local/mocreo-card.js")
+    except Exception as err:
+        _LOGGER.warning("Error registering extra JS url for frontend: %s", err)
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
