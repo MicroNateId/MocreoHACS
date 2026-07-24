@@ -9,9 +9,10 @@ BASE_URL = "https://api.mocreo.com/v1"
 class MocreoApiClient:
     """ApiClient for MOCREO OpenAPI."""
 
-    def __init__(self, api_key: str, session: aiohttp.ClientSession | None = None) -> None:
+    def __init__(self, api_key: str, asset_id: str, session: aiohttp.ClientSession | None = None) -> None:
         """Initialize the API client."""
         self._api_key = api_key
+        self._asset_id = asset_id
         self._session = session
 
     async def async_get_devices(self) -> dict[str, dict[str, Any]]:
@@ -23,21 +24,24 @@ class MocreoApiClient:
         else:
             session = self._session
 
-        url = f"{BASE_URL}/devices"
-        headers = {"Authorization": f"Bearer {self._api_key}"}
+        url = f"{BASE_URL}/assets/{self._asset_id}/devices"
+        headers = {"X-API-Key": self._api_key}
 
         try:
             async with session.get(url, headers=headers, timeout=10) as response:
                 if response.status != 200:
                     _LOGGER.error("Mocreo API returned status %s for url %s", response.status, url)
-                    return {}
+                    raise Exception(f"Mocreo API HTTP status {response.status}")
 
                 data = await response.json()
                 if not data.get("success"):
                     _LOGGER.error("Mocreo API returned error: %s", data)
-                    return {}
+                    raise Exception(f"Mocreo API error: {data}")
 
                 devices_list = data.get("result", [])
+                if not devices_list:
+                    _LOGGER.warning("Mocreo API returned 0 devices for asset %s", self._asset_id)
+                    raise Exception("No devices returned from MOCREO API")
                 devices_dict = {}
 
                 for dev in devices_list:
@@ -45,18 +49,13 @@ class MocreoApiClient:
                     if not dev_id:
                         continue
 
-                    props = {}
-                    for p in dev.get("properties", []):
-                        name = p.get("name")
-                        val = p.get("value")
-                        if name:
-                            props[name] = val
-
+                    props = dev.get("properties", {})
                     attrs = dev.get("attributes", {})
+                    labels = attrs.get("labels", {})
 
                     devices_dict[dev_id] = {
                         "id": dev_id,
-                        "name": attrs.get("displayName") or dev.get("name") or f"Mocreo {dev.get('model')}",
+                        "name": labels.get("displayName") or dev.get("name") or f"Mocreo {dev.get('model')}",
                         "model": dev.get("model"),
                         "type": dev.get("type"),
                         "properties": props,

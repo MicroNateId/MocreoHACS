@@ -27,15 +27,19 @@ async def async_setup_entry(
 ) -> None:
     """Set up MOCREO sensors based on a config entry."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    entities: list[SensorEntity] = []
 
-    # Dynamically discover which properties are available for each device
-    for device_id, device in coordinator.data.items():
-        properties = device.get("properties", {})
-        
-        for field in SUPPORTED_FIELDS:
-            if field in properties:
-                entities.append(MocreoSensor(coordinator, device_id, field))
+    if not coordinator.data:
+        await coordinator.async_refresh()
+
+    _LOGGER.warning("MOCREO_COORDINATOR_DATA_KEYS: %s", list(coordinator.data.keys()) if coordinator.data else None)
+
+    entities: list[SensorEntity] = []
+    if coordinator.data:
+        for device_id, device in coordinator.data.items():
+            properties = device.get("properties", {})
+            for field in SUPPORTED_FIELDS:
+                if field in properties:
+                    entities.append(MocreoSensor(coordinator, device_id, field))
 
     async_add_entities(entities)
 

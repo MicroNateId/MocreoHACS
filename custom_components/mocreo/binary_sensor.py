@@ -22,16 +22,17 @@ async def async_setup_entry(
 ) -> None:
     """Set up MOCREO binary sensors based on a config entry."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    entities: list[BinarySensorEntity] = []
 
-    for device_id, device in coordinator.data.items():
-        # Connectivity / Online status for all devices
-        entities.append(MocreoOnlineBinarySensor(coordinator, device_id))
-        
-        # Moisture / Water leak binary sensor if device reports water_leak property
-        properties = device.get("properties", {})
-        if "water_leak" in properties:
-            entities.append(MocreoWaterLeakBinarySensor(coordinator, device_id))
+    if not coordinator.data:
+        await coordinator.async_refresh()
+
+    entities: list[BinarySensorEntity] = []
+    if coordinator.data:
+        for device_id, device in coordinator.data.items():
+            entities.append(MocreoOnlineBinarySensor(coordinator, device_id))
+            properties = device.get("properties", {})
+            if "water_leak" in properties:
+                entities.append(MocreoWaterLeakBinarySensor(coordinator, device_id))
 
     async_add_entities(entities)
 
