@@ -1,4 +1,4 @@
-class MocreoCardV8 extends HTMLElement {
+class MocreoCard extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
@@ -259,18 +259,15 @@ class MocreoCardV8 extends HTMLElement {
   }
 }
 
-if (!customElements.get('mocreo-card-v8')) {
-  customElements.define('mocreo-card-v8', MocreoCardV8);
-}
 if (!customElements.get('mocreo-card')) {
-  customElements.define('mocreo-card', MocreoCardV8);
+  customElements.define('mocreo-card', MocreoCard);
 }
 
 window.customCards = window.customCards || [];
-if (!window.customCards.some(c => c.type === 'mocreo-card-v8')) {
+if (!window.customCards.some(c => c.type === 'mocreo-card')) {
   window.customCards.push({
-    type: 'mocreo-card-v8',
-    name: 'MOCREO IoT Family Card V8',
+    type: 'mocreo-card',
+    name: 'MOCREO IoT Family Card',
     description: 'A custom card to display all MOCREO environmental sensors and live metrics.'
   });
 }
