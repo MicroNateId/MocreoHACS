@@ -30,6 +30,8 @@ class MocreoCard extends HTMLElement {
     
     const devices = {};
     Object.keys(states).forEach(id => {
+      if (id.startsWith('update.') || id.startsWith('button.') || id.startsWith('select.')) return;
+
       const stateObj = states[id];
       const friendlyName = stateObj.attributes.friendly_name || id;
       
@@ -40,6 +42,9 @@ class MocreoCard extends HTMLElement {
                        friendlyName.toLowerCase().includes('master_bed');
                        
       if (!isMocreo) return;
+
+      const lowerName = friendlyName.toLowerCase();
+      if (lowerName.includes('base') || lowerName.includes('hub') || lowerName.includes('gateway')) return;
       
       let devName = friendlyName
         .replace(/ (Temperature|Humidity|Battery|Online|Connectivity|Water Leak|Moisture|Base|Lora).*/gi, '')
@@ -48,7 +53,6 @@ class MocreoCard extends HTMLElement {
       if (devName.toLowerCase().includes('master bedroom') || devName.toLowerCase().includes('master bed')) devName = 'Master Bedroom';
       else if (devName.toLowerCase().includes('girls bedroom')) devName = 'Girls Bedroom';
       else if (devName.toLowerCase().includes('guest bedroom') || devName.toLowerCase().includes('guest bed')) devName = 'Guest Bedroom';
-      else if (devName.toLowerCase().includes('stairway')) devName = 'Stairway Sensor';
 
       if (!devices[devName]) {
         devices[devName] = {
@@ -57,7 +61,6 @@ class MocreoCard extends HTMLElement {
           humidity: undefined,
           battery: undefined,
           online: undefined,
-          last_updated: undefined
         };
       }
       
@@ -73,23 +76,49 @@ class MocreoCard extends HTMLElement {
       if (id.includes('online') || stateObj.attributes.device_class === 'connectivity') {
         devices[devName].online = stateObj.state === 'on' || stateObj.state === 'true';
       }
-      if (stateObj.last_updated) {
-        devices[devName].last_updated = stateObj.last_updated;
-      }
     });
 
-    let totalDevices = Object.keys(devices).length;
+    let totalDevices = 0;
     let onlineCount = 0;
-
     let devicesHtml = '';
+
     Object.keys(devices).sort().forEach(devName => {
       const dev = devices[devName];
+      if (dev.temp === undefined && dev.humidity === undefined) return;
+
+      totalDevices++;
       const isOnline = dev.online !== undefined ? dev.online : (dev.temp !== 'unavailable' && dev.temp !== undefined);
       if (isOnline) onlineCount++;
 
-      const tempDisplay = (dev.temp && dev.temp !== 'unavailable') ? `${dev.temp}°F` : 'N/A';
-      const humidityDisplay = (dev.humidity && dev.humidity !== 'unavailable') ? `${dev.humidity}%` : 'N/A';
-      const batteryDisplay = (dev.battery && dev.battery !== 'unavailable') ? `${dev.battery}%` : 'N/A';
+      const hasTemp = dev.temp && dev.temp !== 'unavailable';
+      const hasHumidity = dev.humidity && dev.humidity !== 'unavailable';
+      const hasBattery = dev.battery && dev.battery !== 'unavailable';
+
+      let metricsHtml = '';
+      if (hasTemp) {
+        metricsHtml += `
+          <div class="metric-box">
+            <span class="metric-label">Temp</span>
+            <span class="metric-val temp-val">${dev.temp}°F</span>
+          </div>
+        `;
+      }
+      if (hasHumidity) {
+        metricsHtml += `
+          <div class="metric-box">
+            <span class="metric-label">Humidity</span>
+            <span class="metric-val humidity-val">${dev.humidity}%</span>
+          </div>
+        `;
+      }
+      if (hasBattery) {
+        metricsHtml += `
+          <div class="metric-box">
+            <span class="metric-label">Battery</span>
+            <span class="metric-val battery-val">${dev.battery}%</span>
+          </div>
+        `;
+      }
 
       devicesHtml += `
         <div class="device-card">
@@ -98,18 +127,7 @@ class MocreoCard extends HTMLElement {
             <span class="status-badge ${isOnline ? 'online' : 'offline'}">${isOnline ? 'Online' : 'Offline'}</span>
           </div>
           <div class="metrics-grid">
-            <div class="metric-box">
-              <span class="metric-label">Temp</span>
-              <span class="metric-val temp-val">${tempDisplay}</span>
-            </div>
-            <div class="metric-box">
-              <span class="metric-label">Humidity</span>
-              <span class="metric-val humidity-val">${humidityDisplay}</span>
-            </div>
-            <div class="metric-box">
-              <span class="metric-label">Battery</span>
-              <span class="metric-val battery-val">${batteryDisplay}</span>
-            </div>
+            ${metricsHtml}
           </div>
         </div>
       `;
@@ -196,7 +214,7 @@ class MocreoCard extends HTMLElement {
         .offline { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.3); }
         .metrics-grid {
           display: grid;
-          grid-template-columns: 1fr 1fr 1fr;
+          grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
           gap: 6px;
           text-align: center;
         }
@@ -249,6 +267,6 @@ if (!window.customCards.some(c => c.type === 'mocreo-card')) {
   window.customCards.push({
     type: 'mocreo-card',
     name: 'MOCREO IoT Family Card',
-    description: 'A custom card to display all MOCREO environmental sensors, gateways, and live metrics.'
+    description: 'A custom card to display all MOCREO environmental sensors and live metrics.'
   });
 }
