@@ -1,0 +1,31 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "MOCREO IoT Platform Setup",
+        "description": "Log in with your MOCREO account credentials. The integration will automatically discover your assets and generate a secure API Key for Home Assistant.",
+        "data": {
+          "email": "Email",
+          "password": "Password"
+        }
+      },
+      "select_asset": {
+        "title": "Select MOCREO Asset",
+        "description": "Select the MOCREO Asset (logical container/location) containing the devices you want to sync.",
+        "data": {
+          "asset_id": "Asset"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to the MOCREO API. Please check your network or try again.",
+      "invalid_auth": "Invalid email or password. Please try again.",
+      "forbidden": "Access forbidden. Check account permissions.",
+      "invalid_asset": "The selected Asset ID is invalid or cannot be reached.",
+      "no_assets": "No assets found under this MOCREO account. Set up an asset first.",
+      "api_key_failed": "Failed to generate an API Key. Please verify account permissions.",
+      "api_error": "MOCREO API returned an error.",
+      "unknown": "An unexpected error occurred."
+    }
+  }
+}
