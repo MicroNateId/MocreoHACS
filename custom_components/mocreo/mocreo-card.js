@@ -37,27 +37,19 @@ class MocreoCard extends HTMLElement {
       const lowerName = friendlyName.toLowerCase();
       const lowerId = id.toLowerCase();
 
-      if (lowerName.includes('base') || lowerName.includes('hub') || lowerName.includes('gateway') || lowerName.includes('lora') || lowerName.includes('update')) return;
-      if (lowerId.includes('base') || lowerId.includes('hub') || lowerId.includes('gateway') || lowerId.includes('lora') || lowerId.includes('update')) return;
-      
-      const isMocreo = lowerId.includes('mocreo') || 
-                       lowerName.includes('mocreo') || 
-                       lowerId.includes('guest_bed') || 
-                       lowerId.includes('girls_bedroom') || 
-                       lowerId.includes('master_bed');
-                       
-      if (!isMocreo) return;
+      if (lowerName.includes('base') || lowerName.includes('hub') || lowerName.includes('gateway') || lowerName.includes('lora') || lowerName.includes('update') || lowerName.includes('platform')) return;
+      if (lowerId.includes('base') || lowerId.includes('hub') || lowerId.includes('gateway') || lowerId.includes('lora') || lowerId.includes('update') || lowerId.includes('platform')) return;
 
-      let devName = friendlyName
-        .replace(/ (Temperature|Humidity|Battery|Online|Connectivity|Water Leak|Moisture|Base|Lora).*/gi, '')
-        .trim();
-
-      const lowerDevName = devName.toLowerCase();
-      if (lowerDevName === 'mocreo' || lowerDevName === 'mocreo iot platform' || lowerDevName.includes('update') || lowerDevName.includes('base') || lowerDevName.includes('hub')) return;
-        
-      if (lowerDevName.includes('master bedroom') || lowerDevName.includes('master bed')) devName = 'Master Bedroom';
-      else if (lowerDevName.includes('girls bedroom')) devName = 'Girls Bedroom';
-      else if (lowerDevName.includes('guest bedroom') || lowerDevName.includes('guest bed')) devName = 'Guest Bedroom';
+      let devName = '';
+      if (lowerName.includes('master bedroom') || lowerName.includes('master bed') || lowerId.includes('master_bed')) {
+        devName = 'Master Bedroom';
+      } else if (lowerName.includes('girls bedroom') || lowerId.includes('girls_bedroom')) {
+        devName = 'Girls Bedroom';
+      } else if (lowerName.includes('guest bedroom') || lowerName.includes('guest bed') || lowerId.includes('guest_bed')) {
+        devName = 'Guest Bedroom';
+      } else {
+        return;
+      }
 
       if (!devices[devName]) {
         devices[devName] = {
