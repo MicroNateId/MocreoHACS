@@ -1,4 +1,4 @@
-class MocreoCard extends HTMLElement {
+class MocreoCardV8 extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
@@ -55,22 +55,25 @@ class MocreoCard extends HTMLElement {
         devices[devName] = {
           name: devName,
           temp: undefined,
+          tempUnit: '°F',
           humidity: undefined,
           battery: undefined,
           online: undefined,
         };
       }
       
-      if (id.includes('temperature') && !id.includes('battery') && !id.includes('online')) {
+      const deviceClass = stateObj.attributes.device_class;
+
+      if (deviceClass === 'temperature' || id.endsWith('_temperature') || id.endsWith('temperature_temperature')) {
         devices[devName].temp = stateObj.state;
-      }
-      if (id.includes('humidity')) {
+        if (stateObj.attributes.unit_of_measurement) {
+          devices[devName].tempUnit = stateObj.attributes.unit_of_measurement;
+        }
+      } else if (deviceClass === 'humidity' || id.endsWith('_humidity') || id.includes('humidity')) {
         devices[devName].humidity = stateObj.state;
-      }
-      if (id.includes('battery')) {
+      } else if (deviceClass === 'battery' || id.endsWith('_battery') || id.includes('battery')) {
         devices[devName].battery = stateObj.state;
-      }
-      if (id.includes('online') || stateObj.attributes.device_class === 'connectivity') {
+      } else if (id.includes('online') || deviceClass === 'connectivity') {
         devices[devName].online = stateObj.state === 'on' || stateObj.state === 'true';
       }
     });
@@ -97,7 +100,7 @@ class MocreoCard extends HTMLElement {
         metricsHtml += `
           <div class="metric-box">
             <span class="metric-label">Temp</span>
-            <span class="metric-val temp-val">${dev.temp}°F</span>
+            <span class="metric-val temp-val">${dev.temp}${dev.tempUnit}</span>
           </div>
         `;
       }
@@ -256,15 +259,18 @@ class MocreoCard extends HTMLElement {
   }
 }
 
+if (!customElements.get('mocreo-card-v8')) {
+  customElements.define('mocreo-card-v8', MocreoCardV8);
+}
 if (!customElements.get('mocreo-card')) {
-  customElements.define('mocreo-card', MocreoCard);
+  customElements.define('mocreo-card', MocreoCardV8);
 }
 
 window.customCards = window.customCards || [];
-if (!window.customCards.some(c => c.type === 'mocreo-card')) {
+if (!window.customCards.some(c => c.type === 'mocreo-card-v8')) {
   window.customCards.push({
-    type: 'mocreo-card',
-    name: 'MOCREO IoT Family Card',
+    type: 'mocreo-card-v8',
+    name: 'MOCREO IoT Family Card V8',
     description: 'A custom card to display all MOCREO environmental sensors and live metrics.'
   });
 }
