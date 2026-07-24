@@ -51,10 +51,13 @@ class MocreoCard extends HTMLElement {
       let devName = friendlyName
         .replace(/ (Temperature|Humidity|Battery|Online|Connectivity|Water Leak|Moisture|Base|Lora).*/gi, '')
         .trim();
+
+      const lowerDevName = devName.toLowerCase();
+      if (lowerDevName === 'mocreo' || lowerDevName === 'mocreo iot platform' || lowerDevName.includes('update') || lowerDevName.includes('base') || lowerDevName.includes('hub')) return;
         
-      if (devName.toLowerCase().includes('master bedroom') || devName.toLowerCase().includes('master bed')) devName = 'Master Bedroom';
-      else if (devName.toLowerCase().includes('girls bedroom')) devName = 'Girls Bedroom';
-      else if (devName.toLowerCase().includes('guest bedroom') || devName.toLowerCase().includes('guest bed')) devName = 'Guest Bedroom';
+      if (lowerDevName.includes('master bedroom') || lowerDevName.includes('master bed')) devName = 'Master Bedroom';
+      else if (lowerDevName.includes('girls bedroom')) devName = 'Girls Bedroom';
+      else if (lowerDevName.includes('guest bedroom') || lowerDevName.includes('guest bed')) devName = 'Guest Bedroom';
 
       if (!devices[devName]) {
         devices[devName] = {
@@ -86,18 +89,16 @@ class MocreoCard extends HTMLElement {
 
     Object.keys(devices).sort().forEach(devName => {
       const dev = devices[devName];
-      if ((dev.temp === undefined || dev.temp === 'unavailable') && 
-          (dev.humidity === undefined || dev.humidity === 'unavailable')) {
-        return;
-      }
+
+      const hasTemp = dev.temp !== undefined && dev.temp !== 'unavailable' && dev.temp !== 'unknown' && !isNaN(parseFloat(dev.temp));
+      const hasHumidity = dev.humidity !== undefined && dev.humidity !== 'unavailable' && dev.humidity !== 'unknown' && !isNaN(parseFloat(dev.humidity));
+      const hasBattery = dev.battery !== undefined && dev.battery !== 'unavailable' && dev.battery !== 'unknown' && !isNaN(parseFloat(dev.battery));
+
+      if (!hasTemp && !hasHumidity) return;
 
       totalDevices++;
-      const isOnline = dev.online !== undefined ? dev.online : (dev.temp !== 'unavailable' && dev.temp !== undefined);
+      const isOnline = dev.online !== undefined ? dev.online : true;
       if (isOnline) onlineCount++;
-
-      const hasTemp = dev.temp && dev.temp !== 'unavailable';
-      const hasHumidity = dev.humidity && dev.humidity !== 'unavailable';
-      const hasBattery = dev.battery && dev.battery !== 'unavailable';
 
       let metricsHtml = '';
       if (hasTemp) {
