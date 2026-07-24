@@ -152,10 +152,14 @@ class MocreoCard extends HTMLElement {
   }
 }
 
-customElements.define('mocreo-card', MocreoCard);
+if (!customElements.get('mocreo-card')) {
+  customElements.define('mocreo-card', MocreoCard);
+}
 window.customCards = window.customCards || [];
-window.customCards.push({
-  type: 'mocreo-card',
-  name: 'MOCREO IoT Family Card',
-  description: 'A custom card to display all MOCREO environmental sensors, gateways, and live metrics.'
-});
+if (!window.customCards.some(c => c.type === 'mocreo-card')) {
+  window.customCards.push({
+    type: 'mocreo-card',
+    name: 'MOCREO IoT Family Card',
+    description: 'A custom card to display all MOCREO environmental sensors, gateways, and live metrics.'
+  });
+}
