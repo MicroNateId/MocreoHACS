@@ -1,7 +1,7 @@
 # MOCREO IoT Platform Custom Integration for Home Assistant
 
-![Version](https://img.shields.io/github/v/release/MicroNateId/MocreoHACS?style=for-the-badge&color=blue)
-![License](https://img.shields.io/github/license/MicroNateId/MocreoHACS?style=for-the-badge&color=green)
+![Version](https://img.shields.io/github/v/release/MicroNateId/mocreo?style=for-the-badge&color=blue)
+![License](https://img.shields.io/github/license/MicroNateId/mocreo?style=for-the-badge&color=green)
 ![HACS](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)
 
 > [!IMPORTANT]
@@ -50,7 +50,7 @@ You can install this integration via the Home Assistant Community Store (HACS):
 2. Click the three dots in the top-right corner and select **Custom repositories**.
 3. Add the following GitHub repository URL:
    ```text
-   https://github.com/MicroNateId/MocreoHACS
+   https://github.com/MicroNateId/mocreo
    ```
 4. Select **Integration** as the category, and click **Add**.
 5. Find **MOCREO IoT Platform** in the search list, click it, and select **Download**.
