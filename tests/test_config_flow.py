@@ -17,6 +17,8 @@ if "homeassistant" not in sys.modules:
     sys.modules["homeassistant.components.sensor"] = ha_mock
     sys.modules["homeassistant.components.binary_sensor"] = ha_mock
 
+sys.modules["custom_components.mocreo.api"] = MagicMock()
+
 class TestMocreoConfigFlow(unittest.TestCase):
     """Test suite for Mocreo Config Flow."""
 

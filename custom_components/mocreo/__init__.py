@@ -1,15 +1,16 @@
-"""The MOCREO IoT Platform integration."""
-from datetime import timedelta
-import logging
+"""MOCREO IoT Platform Integration for Home Assistant."""
 import asyncio
+import importlib
+import logging
+from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_API_KEY, Platform
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import DOMAIN, CONF_ASSET_ID, DEFAULT_SCAN_INTERVAL
+from .api import MocreoApiClient
+from .const import DEFAULT_SCAN_INTERVAL, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -17,35 +18,13 @@ PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.BINARY_SENSOR]
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up MOCREO IoT Platform from a config entry."""
-    api_key = entry.data.get(CONF_API_KEY)
-    asset_id = entry.data.get(CONF_ASSET_ID)
-
-    _LOGGER.debug("Setting up MOCREO entry: asset_id=%s", asset_id)
-    if not asset_id:
-        _LOGGER.error("MOCREO Asset ID is missing or empty in configuration!")
-        return False
-
-    session = async_get_clientsession(hass)
+    api_key = entry.data["api_key"]
+    client = MocreoApiClient(api_key)
 
     async def async_update_data():
-        """Fetch data from Mocreo API."""
-        url = f"https://api.mocreo.com/v1/assets/{asset_id}/devices"
-        headers = {"X-API-Key": api_key}
-        
+        """Fetch data from MOCREO API."""
         try:
-            async with asyncio.timeout(10):
-                async with session.get(url, headers=headers) as response:
-                    if response.status != 200:
-                        raise UpdateFailed(f"Error communicating with API: status {response.status}")
-                    data = await response.json()
-                    if not data.get("success"):
-                        raise UpdateFailed(f"API returned failure: {data.get('errors')}")
-                    
-                    # Store device dictionary keyed by device ID
-                    devices = {}
-                    for dev in data.get("result", []):
-                        devices[dev["id"]] = dev
-                    return devices
+            return await client.async_get_devices()
         except Exception as err:
             raise UpdateFailed(f"Error fetching data: {err}") from err
 
@@ -62,11 +41,21 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
 
-    # Register static path for custom Lovelace card
+    # Pre-import platform modules in thread executor to prevent event loop blocking warnings
+    loop = asyncio.get_running_loop()
+    for platform in PLATFORMS:
+        await loop.run_in_executor(
+            None, importlib.import_module, f"custom_components.{DOMAIN}.{platform}"
+        )
+
+    # Register static path for custom Lovelace card safely
     try:
+        card_path = await loop.run_in_executor(
+            None, hass.config.path, "custom_components/mocreo/mocreo-card.js"
+        )
         hass.http.register_static_path(
             "/mocreo_static/mocreo-card.js",
-            hass.config.path("custom_components/mocreo/mocreo-card.js"),
+            card_path,
             cache_headers=False,
         )
     except Exception:

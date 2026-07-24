@@ -4,7 +4,7 @@
   "codeowners": ["@MicroNateId"],
   "config_flow": true,
   "iot_class": "cloud_polling",
-  "version": "1.4.1",
+  "version": "2.0.0",
   "requirements": [],
   "documentation": "https://github.com/MicroNateId/MocreoHACS",
   "issue_tracker": "https://github.com/MicroNateId/MocreoHACS/issues"
