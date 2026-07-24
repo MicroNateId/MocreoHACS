@@ -30,22 +30,24 @@ class MocreoCard extends HTMLElement {
     
     const devices = {};
     Object.keys(states).forEach(id => {
-      if (id.startsWith('update.') || id.startsWith('button.') || id.startsWith('select.')) return;
+      if (!id.startsWith('sensor.') && !id.startsWith('binary_sensor.')) return;
 
       const stateObj = states[id];
       const friendlyName = stateObj.attributes.friendly_name || id;
+      const lowerName = friendlyName.toLowerCase();
+      const lowerId = id.toLowerCase();
+
+      if (lowerName.includes('base') || lowerName.includes('hub') || lowerName.includes('gateway') || lowerName.includes('lora') || lowerName.includes('update')) return;
+      if (lowerId.includes('base') || lowerId.includes('hub') || lowerId.includes('gateway') || lowerId.includes('lora') || lowerId.includes('update')) return;
       
-      const isMocreo = id.includes('mocreo') || 
-                       friendlyName.toLowerCase().includes('mocreo') || 
-                       friendlyName.toLowerCase().includes('guest_bed') || 
-                       friendlyName.toLowerCase().includes('girls_bedroom') || 
-                       friendlyName.toLowerCase().includes('master_bed');
+      const isMocreo = lowerId.includes('mocreo') || 
+                       lowerName.includes('mocreo') || 
+                       lowerId.includes('guest_bed') || 
+                       lowerId.includes('girls_bedroom') || 
+                       lowerId.includes('master_bed');
                        
       if (!isMocreo) return;
 
-      const lowerName = friendlyName.toLowerCase();
-      if (lowerName.includes('base') || lowerName.includes('hub') || lowerName.includes('gateway')) return;
-      
       let devName = friendlyName
         .replace(/ (Temperature|Humidity|Battery|Online|Connectivity|Water Leak|Moisture|Base|Lora).*/gi, '')
         .trim();
@@ -84,7 +86,10 @@ class MocreoCard extends HTMLElement {
 
     Object.keys(devices).sort().forEach(devName => {
       const dev = devices[devName];
-      if (dev.temp === undefined && dev.humidity === undefined) return;
+      if ((dev.temp === undefined || dev.temp === 'unavailable') && 
+          (dev.humidity === undefined || dev.humidity === 'unavailable')) {
+        return;
+      }
 
       totalDevices++;
       const isOnline = dev.online !== undefined ? dev.online : (dev.temp !== 'unavailable' && dev.temp !== undefined);
