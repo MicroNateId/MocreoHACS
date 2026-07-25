@@ -1,7 +1,5 @@
 {
   "name": "MOCREO IoT Platform",
   "content_in_root": false,
-  "domains": ["mocreo"],
-  "country": [],
   "homeassistant": "2023.8.0"
 }
